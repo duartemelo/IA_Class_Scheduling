@@ -1,0 +1,46 @@
+Variáveis, lessons/aulas: {L1,L2,L3,L4,...}
+
+
+Domínio:
+t - Teacher (index of a teacher, there must be a teachers array)
+c - Class (index of a class, there must be a classes array)
+su - Subject (index of a subject, there must be a subjects array)
+d - Duration (in minutes)
+w - Weekday (1 to 7)
+st - Start_hour
+r - Room (O if online)
+
+L1(t,c,su,d,w,st,r)
+L1(0, 1, 5, 120, 3, "14:30", 0)
+
+
+Constraints:
+L.d = 120
+L.w = [2, 6] (1 - Sunday, 7 - Saturday)
+Sum of all L with same c (class) = 10
+Sum of all L with same c with r==O = [1,2]
+Sum of all L with same c with same w <= 3
+
+If La.c == Lb.c and La.w == Lb.w and Lb.st == La.st+La.d, then Lb.r != O (caso uma turma tenha duas aulas no mesmo dia, a aula Lb, se for logo após La, não pode ser online)
+"Online lessons cannot be booked immediately or immediately after a face-to-face
+lesson"
+
+
+Only two L with same c, w, st from [8,11] (11 because is start hour, if a class' start hour is 11, the class finishes at 13)
+Only two L with same c, w, st from [13,16]
+"Only up to 2 lessons can take place in the morning and up to 2 lessons in the afternoon"
+
+
+Two to four l with same c have same r
+"Every class has 2 to 4 lessons in a specific classroom"
+
+
+if La.w == Lb.w and (La.st == Lb.st or (Lb.st > La.st and Lb.st < La.st+La.d))
+    then La.t != Lb.t
+    then La.c != Lb.c
+    then La.r != Lb.r (if La.r != O and Lb.r != O)
+    
+
+(a teacher can't be in two lessons at the same time)
+(a class can't be in two lessons at the same time)
+(a room can't be in two lessons at the same time, unless it's online)
