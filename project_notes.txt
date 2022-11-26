@@ -4,7 +4,7 @@ Variáveis, lessons/aulas: {L1,L2,L3,L4,...}
 Domínio:
 t - Teacher (index of a teacher, there must be a teachers array)
 c - Class (index of a class, there must be a classes array)
-su - Subject (index of a subject, there must be a subjects array)
+su - Subject (index of a subject, there must be a subjects array) 
 d - Duration (in minutes)
 w - Weekday (1 to 7)
 st - Start_hour
