@@ -30,6 +30,7 @@ restricoes = [
 # days_too_short
 days_too_short = NaryCSP(dominio, restricoes)
 print(days_too_short.variables)
+#print(dominio)
 
 # Result
 print(ac_solver(days_too_short, arc_heuristic=sat_up))
