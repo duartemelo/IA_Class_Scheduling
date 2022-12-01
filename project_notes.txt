@@ -15,9 +15,9 @@ L1(0, 1, 5, 120, 3, "14:30", 0)
 
 
 Constraints:
-L.d = 120
-L.w = [2, 6] (1 - Sunday, 7 - Saturday)
-Sum of all L with same c (class) = 10
+L.d = 120 [done]
+L.w = [2, 6] (1 - Sunday, 7 - Saturday) [done]
+Sum of all L with same c (class) = 10 [done]
 Sum of all L with same c with r==O = [1,2]
 Sum of all L with same c with same w <= 3
 
@@ -41,6 +41,6 @@ if La.w == Lb.w and (La.st == Lb.st or (Lb.st > La.st and Lb.st < La.st+La.d))
     then La.r != Lb.r (if La.r != O and Lb.r != O)
     
 
-(a teacher can't be in two lessons at the same time)
-(a class can't be in two lessons at the same time)
-(a room can't be in two lessons at the same time, unless it's online)
+(a teacher can't be in two lessons at the same time) [done]
+(a class can't be in two lessons at the same time) [done]
+(a room can't be in two lessons at the same time, unless it's online) [done]
