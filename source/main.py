@@ -35,12 +35,22 @@ dominio = {}
 # 0 - 9 e 10 - 19 e 20 - 29, etc. (10 lessons por class)
 aux = 0
 aux_final = 10
+# cada turma tem de ter pelo menos 1 aula online
+# 0 é online e 10 é online
+aux_r = 0
+aux_r_final = 1
 for x in classes:
     while aux != aux_final:
         dominio.update({f'L{aux}.c': {x}}) # classes
+        while aux_r != aux_r_final:
+            dominio.update({f'L{aux}.r': {0}})
+            aux_r+=1
         aux+=1
+    
     aux = aux_final
     aux_final = aux+10
+    aux_r = 0
+    aux_r_final = 1
 
 
 for index, list_el in enumerate(list):
@@ -48,8 +58,7 @@ for index, list_el in enumerate(list):
     dominio.update({f'L{index}.d': {2}}) # duration
     dominio.update({f'L{index}.w': set(range(2,7))}) # weekday
     dominio.update({f'L{index}.st': set(range(8,17))}) # start time (apenas horas certas? <- TODO: ver isto)
-    dominio.update({f'L{index}.r': set(range(1,len(rooms)+1))}) # rooms
-
+    dominio.update({f'L{index}.r': set(range(0,len(rooms)+1))}) # rooms
 
 restricoes = [
     #Constraint(dominio.keys(), all_diff_constraint)
@@ -73,7 +82,7 @@ for x in range (0, 20):
         # a não ser que seja online, uma sala só pode estar numa aula ao mesmo tempo TODO: falta testar
 
         constraint_cant_book_online_after_lesson = Constraint((f'L{x}.c',f'L{y}.c',f'L{x}.w',f'L{y}.w',f'L{x}.st',f'L{y}.st',f'L{x}.d',  f'L{y}.r'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd, lyr : (lyr != 0) if(lxc == lyc and lxw == lyw and lyst == lxst + lxd) else True)
-        # PRECISO TESTAR
+        # uma aula online, não pode ser logo depois de uma presencial TODO: falta testar
 
         restricoes.append(constraint_class_lesson_at_same_time)
         restricoes.append(constraint_subject_lesson_at_same_time)
