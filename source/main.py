@@ -72,9 +72,13 @@ for x in range (0, 20):
         constraint_room_lesson_at_same_time = Constraint((f'L{x}.r', f'L{y}.r', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d', f'L{y}.d'), lambda lxr, lyr, lxw, lyw, lxst, lyst, lxd, lyd: (lxst >= (lyst + lyd) or lyst >= (lxst + lxd)) if(lxr == lyr and lxw == lyw and lxr != 0) else True)
         # a não ser que seja online, uma sala só pode estar numa aula ao mesmo tempo TODO: falta testar
 
+        constraint_cant_book_online_after_lesson = Constraint((f'L{x}.c',f'L{y}.c',f'L{x}.w',f'L{y}.w',f'L{x}.st',f'L{y}.st',f'L{x}.d',  f'L{y}.r'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd, lyr : (lyr != 0) if(lxc == lyc and lxw == lyw and lyst == lxst + lxd) else True)
+        # PRECISO TESTAR
+
         restricoes.append(constraint_class_lesson_at_same_time)
         restricoes.append(constraint_subject_lesson_at_same_time)
-
+        restricoes.append(constraint_room_lesson_at_same_time)
+        restricoes.append(constraint_cant_book_online_after_lesson) 
 
 
 # print(dominio)
