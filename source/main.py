@@ -94,22 +94,35 @@ for x in range (0, (len(classes)*10)):
         # uma disciplina (assumindo que uma disciplina é dada por um só professor) só pode estar em uma aula ao mesmo tempo
 
         constraint_room_lesson_at_same_time = Constraint((f'L{x}.r', f'L{y}.r', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d', f'L{y}.d'), lambda lxr, lyr, lxw, lyw, lxst, lyst, lxd, lyd: (lxst >= (lyst + lyd) or lyst >= (lxst + lxd)) if(lxr == lyr and lxw == lyw and lxr != 0) else True)
+
+
         # a não ser que seja online, uma sala só pode estar numa aula ao mesmo tempo
 
-        constraint_cant_book_online_after_lesson = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d', f'L{x}.r', f'L{y}.r'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd, lxr, lyr : (lyr != 0) if(lxc == lyc and lxw == lyw and (lyst == lxst + lxd) and lxr != 0) else True)
+        #constraint_cant_book_online_after_lesson = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d', f'L{x}.r', f'L{y}.r'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd, lxr, lyr : (lyr != 0) if(lxc == lyc and lxw == lyw and (lyst == (lxst + lxd)) and lxr != 0) else True)
         # uma aula online não pode ser logo depois de uma presencial 
+        # backup... não usar (é uma função antiga, DEPRECATED! foi substituida pela de baixo)
 
-        constraint_cant_book_online_after_lesson_2 = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{y}.d', f'L{x}.r', f'L{y}.r'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lyd, lxr, lyr : (lxr != 0) if(lxc == lyc and lxw == lyw and (lxst == lyst + lyd) and lyr != 0) else True)
-        # uma aula online não pode ser logo antes de uma presencial 
+
+        constraint_cant_book_presencial_after_online_and_vice_versa = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d', f'L{y}.d', f'L{x}.r', f'L{y}.r'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd, lyd, lxr, lyr : (lyr == 0 and lxr == 0) or (lyr != 0 and lxr != 0) if(lxc == lyc and lxw == lyw and ((lyst == (lxst + lxd)) or (lxst == lyst + lyd))) else True)
+        # uma aula, logo após a outra, deve ser do mesmo "tipo" de sala que a outra, ou seja:
+        # se a primeira for online, a segunda é online
+        # se a primeira for presencial, a segunda é presencial
+        # TODO: em principio funciona, testar mais!!!
+
+
+        #constraint_cant_book_online_after_lesson_2 = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d', f'L{x}.r', f'L{y}.r'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd, lxr, lyr : (lxr == 0) if(lxc == lyc and lxw == lyw and (lyst == lxst + lxd) and lyr == 0) else True)
+        # uma aula presencial não pode ser logo depois de uma online
+        # backup... não usar (é uma função antiga, DEPRECATED! foi substituida pela de cima)
 
         # tres aulas num dia
-        constraint_tree_lessons_a_day = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d', f'L{y}.d'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd, lyd: (lyst >= lxst - lxd*2 and lyst <= lxst) or (lyst <= lxst + lxd*2 and lyst >= lxst) if(lxc == lyc and lxw == lyw) else True)
+        constraint_tree_lessons_a_day = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd: (lyst >= lxst - lxd*2 and lyst <= lxst) or (lyst <= lxst + lxd*2 and lyst >= lxst) if(lxc == lyc and lxw == lyw) else True)
 
         restricoes.append(constraint_class_lesson_at_same_time)
         restricoes.append(constraint_subject_lesson_at_same_time)
         restricoes.append(constraint_room_lesson_at_same_time)
-        restricoes.append(constraint_cant_book_online_after_lesson) 
-        restricoes.append(constraint_cant_book_online_after_lesson_2) 
+        # restricoes.append(constraint_cant_book_online_after_lesson) 
+        # restricoes.append(constraint_cant_book_online_after_lesson_2)
+        restricoes.append(constraint_cant_book_presencial_after_online_and_vice_versa) 
         restricoes.append(constraint_tree_lessons_a_day)
 
 
@@ -123,8 +136,8 @@ for x in range (0, (len(classes)*10)):
 class_scheduling = NaryCSP(dominio, restricoes)
 # print(class_scheduling.variables)
 # print(ac_solver(class_scheduling, arc_heuristic=sat_up))
-dict_solver = ac_search_solver(class_scheduling, arc_heuristic=sat_up)
-# dict_solver = ac_solver(class_scheduling, arc_heuristic=sat_up)
+# dict_solver = ac_search_solver(class_scheduling, arc_heuristic=sat_up)
+dict_solver = ac_solver(class_scheduling, arc_heuristic=sat_up)
 print(dict_solver)
 # TODO: passar dict final para algo mais "bonito"
 
