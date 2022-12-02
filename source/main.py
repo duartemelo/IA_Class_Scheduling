@@ -3,11 +3,18 @@ from csp import *
 
 # TODO: subjects ligadas às classes?
 
+# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
+# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
+# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
+# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
+# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
+# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
+# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
+# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
+
 classes = {
     1: "LESI",
-    2: "LESI-PL",
-    3: "CTB",
-    4: "CTB-PL"
+    2: "LESI-PL"
 }
 
 # numero de aulas total = turmas * 10
@@ -17,22 +24,13 @@ subjects =  {
     2: "Programming",
     3: "Test",
     4: "Teste2",
-    5: "Teste3",
-    6: "Teste3",
-    7: "Teste3",
-    8: "Teste3",
-    9: "Teste3",
-    10: "Teste3"
+    5: "Teste3"
 }
 
 rooms = {
     0: "Online",
     1: "Sala L",
-    2: "Sala T",
-    3: "Sala T",
-    4: "Sala T",
-    5: "Sala T",
-    6: "Sala T"
+    2: "Sala T"
 }
 
 list = []
@@ -60,7 +58,7 @@ for x in classes:
         if (aux_r < aux_r_final): # duas aulas online
             dominio.update({f'L{aux}.r': {0}}) # TODO: aqui estamos a impor duas aulas online, mas podem nao ser necessariamente duas..
         else:
-            dominio.update({f'L{aux}.r': set(range(1,len(rooms)+1))}) # rooms
+            dominio.update({f'L{aux}.r': set(range(1,len(rooms)))}) # rooms
         aux_r+=1
         aux+=1
     
@@ -104,11 +102,15 @@ for x in range (0, (len(classes)*10)):
         constraint_cant_book_online_after_lesson_2 = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{y}.d', f'L{x}.r', f'L{y}.r'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lyd, lxr, lyr : (lxr != 0) if(lxc == lyc and lxw == lyw and (lxst == lyst + lyd) and lyr != 0) else True)
         # uma aula online não pode ser logo antes de uma presencial 
 
+        # tres aulas num dia
+        constraint_tree_lessons_a_day = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d', f'L{y}.d'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd, lyd: (lyst >= lxst - lxd*2 and lyst <= lxst) or (lyst <= lxst + lxd*2 and lyst >= lxst) if(lxc == lyc and lxw == lyw) else True)
+
         restricoes.append(constraint_class_lesson_at_same_time)
         restricoes.append(constraint_subject_lesson_at_same_time)
         restricoes.append(constraint_room_lesson_at_same_time)
         restricoes.append(constraint_cant_book_online_after_lesson) 
         restricoes.append(constraint_cant_book_online_after_lesson_2) 
+        restricoes.append(constraint_tree_lessons_a_day)
 
 
 # print(dominio)
@@ -121,7 +123,8 @@ for x in range (0, (len(classes)*10)):
 class_scheduling = NaryCSP(dominio, restricoes)
 # print(class_scheduling.variables)
 # print(ac_solver(class_scheduling, arc_heuristic=sat_up))
-dict_solver = ac_solver(class_scheduling, arc_heuristic=sat_up)
+dict_solver = ac_search_solver(class_scheduling, arc_heuristic=sat_up)
+# dict_solver = ac_solver(class_scheduling, arc_heuristic=sat_up)
 print(dict_solver)
 # TODO: passar dict final para algo mais "bonito"
 
