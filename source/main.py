@@ -5,7 +5,9 @@ from csp import *
 
 classes = {
     1: "LESI",
-    2: "LESI-PL"
+    2: "LESI-PL",
+    3: "CTB",
+    4: "CTB-PL"
 }
 
 # numero de aulas total = turmas * 10
@@ -15,13 +17,22 @@ subjects =  {
     2: "Programming",
     3: "Test",
     4: "Teste2",
-    5: "Teste3"
+    5: "Teste3",
+    6: "Teste3",
+    7: "Teste3",
+    8: "Teste3",
+    9: "Teste3",
+    10: "Teste3"
 }
 
 rooms = {
     0: "Online",
     1: "Sala L",
-    2: "Sala T"
+    2: "Sala T",
+    3: "Sala T",
+    4: "Sala T",
+    5: "Sala T",
+    6: "Sala T"
 }
 
 list = []
@@ -85,15 +96,19 @@ for x in range (0, (len(classes)*10)):
         # uma disciplina (assumindo que uma disciplina é dada por um só professor) só pode estar em uma aula ao mesmo tempo
 
         constraint_room_lesson_at_same_time = Constraint((f'L{x}.r', f'L{y}.r', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d', f'L{y}.d'), lambda lxr, lyr, lxw, lyw, lxst, lyst, lxd, lyd: (lxst >= (lyst + lyd) or lyst >= (lxst + lxd)) if(lxr == lyr and lxw == lyw and lxr != 0) else True)
-        # a não ser que seja online, uma sala só pode estar numa aula ao mesmo tempo TODO: falta testar / resolver
+        # a não ser que seja online, uma sala só pode estar numa aula ao mesmo tempo
 
         constraint_cant_book_online_after_lesson = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d', f'L{x}.r', f'L{y}.r'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd, lxr, lyr : (lyr != 0) if(lxc == lyc and lxw == lyw and (lyst == lxst + lxd) and lxr != 0) else True)
-        # uma aula online não pode ser logo depois de uma presencial TODO: falta testar
+        # uma aula online não pode ser logo depois de uma presencial 
+
+        constraint_cant_book_online_after_lesson_2 = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{y}.d', f'L{x}.r', f'L{y}.r'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lyd, lxr, lyr : (lxr != 0) if(lxc == lyc and lxw == lyw and (lxst == lyst + lyd) and lyr != 0) else True)
+        # uma aula online não pode ser logo antes de uma presencial 
 
         restricoes.append(constraint_class_lesson_at_same_time)
         restricoes.append(constraint_subject_lesson_at_same_time)
         restricoes.append(constraint_room_lesson_at_same_time)
         restricoes.append(constraint_cant_book_online_after_lesson) 
+        restricoes.append(constraint_cant_book_online_after_lesson_2) 
 
 
 # print(dominio)
