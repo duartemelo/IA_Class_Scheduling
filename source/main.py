@@ -169,7 +169,7 @@ def constraint_two_lessons_of_each_subject_per_week(*su_list):
 
 for el in classes:
     # print(el)
-    day = random.randint(2,6) #TODO: fixar, ta a por o mm random day para todas as turmas...
+    day = random.randint(2,6) #TODO: tentar fixar, ta a por o mm random day para todas as turmas...
     # uma turma tem de ter entre 1 a 2 aulas online por semana
     one_to_two_online_lessons_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "r")), constraint_one_to_two_online_lessons)
     restricoes.append(one_to_two_online_lessons_constraint)
