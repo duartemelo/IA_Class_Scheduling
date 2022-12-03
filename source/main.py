@@ -4,15 +4,6 @@ from my_utils import *
 
 # TODO: subjects ligadas às classes?
 
-# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
-# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
-# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
-# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
-# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
-# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
-# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
-# TODO: DIA LIVRE RANDOM PARA CADA TURMA!
-
 classes = {
     1: "LESI",
     2: "LESI-PL"
@@ -157,13 +148,37 @@ def constraint_tree_lessons_per_day(*w_list):
     # print(w_list)
     return True
 
+
+def constraint_random_free_day_per_week(*w_list):
+    # print(day)
+    if (w_list.count(day) > 0):
+        return False
+    # print(w_list)
+    # print(day)
+    return True
+
+def constraint_two_lessons_of_each_subject_per_week(*su_list):
+    for x in subjects:
+        if (su_list.count(x) != 2):
+            # print("FALSE", su_list)
+            return False
+    # print(su_list)
+    return True
+
+
+
 for el in classes:
+    # print(el)
+    day = random.randint(2,6) #TODO: fixar, ta a por o mm random day para todas as turmas...
     # uma turma tem de ter entre 1 a 2 aulas online por semana
     one_to_two_online_lessons_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "r")), constraint_one_to_two_online_lessons)
     restricoes.append(one_to_two_online_lessons_constraint)
     tree_lessons_per_day_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "w")), constraint_tree_lessons_per_day)
     restricoes.append(tree_lessons_per_day_constraint)
-
+    random_free_day_per_week_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "w")), constraint_random_free_day_per_week)
+    restricoes.append(random_free_day_per_week_constraint)
+    two_lessons_of_each_subject_per_week_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "su")), constraint_two_lessons_of_each_subject_per_week)
+    restricoes.append(two_lessons_of_each_subject_per_week_constraint)
 
 
 
