@@ -2,8 +2,6 @@ from lessons import Lesson
 from csp import *
 from my_utils import *
 
-# TODO: subjects ligadas às classes?
-
 classes = {
     1: "LESI",
     2: "LESI-PL"
@@ -25,10 +23,10 @@ rooms = {
     2: "Sala T"
 }
 
-list = []
+lessons_list = []
 for x in range (len(classes)*10):
     new_l = Lesson(None, None, None, None, None, None)
-    list.append(new_l)
+    lessons_list.append(new_l)
 
 
 dominio = {}
@@ -39,8 +37,9 @@ dominio = {}
 aux = 0
 aux_final = 10
 
-# TODO: cada turma tem de ter 2 aulas de cada cadeira por semana 
+
 for x in classes:
+    dominio.update({f'L{aux}.rd': {random.randint(2,6)}}) # random day que será o dia livre da turma
     while aux != aux_final: # cada turma = 10 aulas
         dominio.update({f'L{aux}.c': {x}}) # assign às turmas (classes)
         aux+=1
@@ -49,11 +48,11 @@ for x in classes:
     aux_final = aux+10
 
 
-for index, list_el in enumerate(list):
+for index, list_el in enumerate(lessons_list):
     dominio.update({f'L{index}.su': set(range(1,len(subjects)+1))}) # subjects
     dominio.update({f'L{index}.d': {2}}) # duration
     dominio.update({f'L{index}.w': set(range(2,7))}) # weekday
-    dominio.update({f'L{index}.st': set(range(8,17))}) # start time (apenas horas certas? <- TODO: ver isto)
+    dominio.update({f'L{index}.st': set(range(8,17))}) # start time
     dominio.update({f'L{index}.r': set(range(0,len(rooms)+1))}) # rooms
 
 restricoes = [
@@ -90,6 +89,7 @@ for x in range (0, (len(classes)*10)):
         # se a primeira for online, a segunda é online
         # se a primeira for presencial, a segunda é presencial
         # TODO: em principio funciona, testar mais!!!
+        # TODO: será trocado por um dia em que só haverá aulas online
 
 
         #constraint_cant_book_online_after_lesson_2 = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d', f'L{x}.r', f'L{y}.r'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd, lxr, lyr : (lxr == 0) if(lxc == lyc and lxw == lyw and (lyst == lxst + lxd) and lyr == 0) else True)
@@ -150,8 +150,15 @@ def constraint_tree_lessons_per_day(*w_list):
 
 
 def constraint_random_free_day_per_week(*w_list):
-    # print(day)
-    if (w_list.count(day) > 0):
+    # print(w_list)
+    random_day = w_list[-1]
+    w_tuple_converted_to_list = list(w_list)
+    w_tuple_converted_to_list.pop()
+    w_list = tuple(w_tuple_converted_to_list)
+
+    # print(w_list)
+    # print(random_day)
+    if (w_list.count(random_day) > 0):
         return False
     # print(w_list)
     # print(day)
@@ -169,13 +176,12 @@ def constraint_two_lessons_of_each_subject_per_week(*su_list):
 
 for el in classes:
     # print(el)
-    day = random.randint(2,6) #TODO: tentar fixar, ta a por o mm random day para todas as turmas...
     # uma turma tem de ter entre 1 a 2 aulas online por semana
     one_to_two_online_lessons_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "r")), constraint_one_to_two_online_lessons)
     restricoes.append(one_to_two_online_lessons_constraint)
     tree_lessons_per_day_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "w")), constraint_tree_lessons_per_day)
     restricoes.append(tree_lessons_per_day_constraint)
-    random_free_day_per_week_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "w")), constraint_random_free_day_per_week)
+    random_free_day_per_week_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "w") + get_random_day_from_class(el)), constraint_random_free_day_per_week)
     restricoes.append(random_free_day_per_week_constraint)
     two_lessons_of_each_subject_per_week_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "su")), constraint_two_lessons_of_each_subject_per_week)
     restricoes.append(two_lessons_of_each_subject_per_week_constraint)
@@ -191,8 +197,8 @@ for el in classes:
 class_scheduling = NaryCSP(dominio, restricoes)
 # print(class_scheduling.variables)
 # print(ac_solver(class_scheduling, arc_heuristic=sat_up))
-# dict_solver = ac_search_solver(class_scheduling, arc_heuristic=sat_up)
-dict_solver = ac_solver(class_scheduling, arc_heuristic=sat_up)
+dict_solver = ac_search_solver(class_scheduling, arc_heuristic=sat_up)
+# dict_solver = ac_solver(class_scheduling, arc_heuristic=sat_up)
 print(dict_solver)
 # TODO: passar dict final para algo mais "bonito"
 
