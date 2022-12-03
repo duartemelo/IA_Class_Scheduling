@@ -18,8 +18,8 @@ Constraints:
 L.d = 120 [done]
 L.w = [2, 6] (1 - Sunday, 7 - Saturday) [done]
 Sum of all L with same c (class) = 10 [done]
-Sum of all L with same c with r==O = [1,2] [kinda done TODO: apenas 2, não é intervalo entre 1 e 2]
-Sum of all L with same c with same w <= 3 TODO:
+Sum of all L with same c with r==O = [1,2] [done]
+Sum of all L with same c with same w <= 3 [done]
 
 If La.c == Lb.c and La.w == Lb.w and Lb.st == La.st+La.d, then Lb.r != O (caso uma turma tenha duas aulas no mesmo dia, a aula Lb, se for logo após La, não pode ser online)
 "Online lessons cannot be booked immediately or immediately after a face-to-face
@@ -29,6 +29,8 @@ lesson" [done]
 Only two L with same c, w, st from [8,11] (11 because is start hour, if a class' start hour is 11, the class finishes at 13)
 Only two L with same c, w, st from [13,16]
 "Only up to 2 lessons can take place in the morning and up to 2 lessons in the afternoon" TODO:
+
+TODO: hora de almoço
 
 
 Two to four l with same c have same r

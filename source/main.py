@@ -1,5 +1,6 @@
 from lessons import Lesson
 from csp import *
+from my_utils import *
 
 # TODO: subjects ligadas às classes?
 
@@ -46,26 +47,15 @@ dominio = {}
 # 0 - 9 e 10 - 19 e 20 - 29, etc. (10 lessons por class)
 aux = 0
 aux_final = 10
-# cada turma pode ter no max 2 aulas online
-# 0 e 1 são online e 10 e 11 são online
-aux_r = 0
-aux_r_final = 2
 
 # TODO: cada turma tem de ter 2 aulas de cada cadeira por semana 
 for x in classes:
     while aux != aux_final: # cada turma = 10 aulas
         dominio.update({f'L{aux}.c': {x}}) # assign às turmas (classes)
-        if (aux_r < aux_r_final): # duas aulas online
-            dominio.update({f'L{aux}.r': {0}}) # TODO: aqui estamos a impor duas aulas online, mas podem nao ser necessariamente duas..
-        else:
-            dominio.update({f'L{aux}.r': set(range(1,len(rooms)))}) # rooms
-        aux_r+=1
         aux+=1
     
     aux = aux_final
     aux_final = aux+10
-    aux_r = 0
-    aux_r_final = 2
 
 
 for index, list_el in enumerate(list):
@@ -73,11 +63,12 @@ for index, list_el in enumerate(list):
     dominio.update({f'L{index}.d': {2}}) # duration
     dominio.update({f'L{index}.w': set(range(2,7))}) # weekday
     dominio.update({f'L{index}.st': set(range(8,17))}) # start time (apenas horas certas? <- TODO: ver isto)
-    # dominio.update({f'L{index}.r': set(range(1,len(rooms)+1))}) # rooms
+    dominio.update({f'L{index}.r': set(range(0,len(rooms)+1))}) # rooms
 
 restricoes = [
     #Constraint(dominio.keys(), all_diff_constraint)
 ]
+
 
 for x in range (0, (len(classes)*10)):
     for y in range (x+1, (len(classes)*10)):
@@ -115,7 +106,8 @@ for x in range (0, (len(classes)*10)):
         # backup... não usar (é uma função antiga, DEPRECATED! foi substituida pela de cima)
 
         # tres aulas num dia
-        constraint_tree_lessons_a_day = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd: (lyst >= lxst - lxd*2 and lyst <= lxst) or (lyst <= lxst + lxd*2 and lyst >= lxst) if(lxc == lyc and lxw == lyw) else True)
+        # constraint_tree_lessons_a_day = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd: (lyst >= lxst - lxd*2 and lyst <= lxst) or (lyst <= lxst + lxd*2 and lyst >= lxst) if(lxc == lyc and lxw == lyw) else True)
+        # DEPRECATED
 
         restricoes.append(constraint_class_lesson_at_same_time)
         restricoes.append(constraint_subject_lesson_at_same_time)
@@ -123,10 +115,58 @@ for x in range (0, (len(classes)*10)):
         # restricoes.append(constraint_cant_book_online_after_lesson) 
         # restricoes.append(constraint_cant_book_online_after_lesson_2)
         restricoes.append(constraint_cant_book_presencial_after_online_and_vice_versa) 
-        restricoes.append(constraint_tree_lessons_a_day)
+        # restricoes.append(constraint_tree_lessons_a_day)
+
+   
+
+
+
+# print(get_only_list_of_attribute_from_class(1, "w"))
 
 
 # print(dominio)
+
+def constraint_function_test(*c_list):
+    print(c_list)
+    return True
+    #for e in c_list:
+    #    if c_list.count(e) > 1:
+    #        # print("ola")
+    #        return True
+    #    else:
+    #        # print("adeus")
+    #        return False
+
+
+def constraint_one_to_two_online_lessons(*r_list):
+    # print(r_list)
+    if r_list.count(0) == 1 or r_list.count(0) == 2:
+        # print("é verdade!", r_list)
+        return True
+    else:
+        # print("é mentira!", r_list)
+        return False 
+
+
+def constraint_tree_lessons_per_day(*w_list):
+    # print(w_list)
+    for x in range(2,7):
+        if (w_list.count(x) > 3):
+            # print("FALSE", w_list)
+            return False
+    # print(w_list)
+    return True
+
+for el in classes:
+    # uma turma tem de ter entre 1 a 2 aulas online por semana
+    one_to_two_online_lessons_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "r")), constraint_one_to_two_online_lessons)
+    restricoes.append(one_to_two_online_lessons_constraint)
+    tree_lessons_per_day_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "w")), constraint_tree_lessons_per_day)
+    restricoes.append(tree_lessons_per_day_constraint)
+
+
+
+
 
 
 
