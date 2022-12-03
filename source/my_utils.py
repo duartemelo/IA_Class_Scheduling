@@ -10,7 +10,7 @@ def get_only_list_of_attribute_from_class(c, attribute):
     return final_list
 
 
-def get_random_day_from_class(c):
+def get_day_from_class(c, type):
     x = (c-1)*10
-    random_day=f'L{x}.rd'
-    return [random_day]
+    day=f'L{x}.{type}'
+    return [day]
