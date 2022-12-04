@@ -109,6 +109,10 @@ for x in range (0, (len(classes)*10)):
         # in the same day, a class can have either online or presencial lessons
         # by doing this, we reduce the number of trips to IPCA
         constraint_cant_book_presencial_on_same_day_of_online = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.r', f'L{y}.r'), lambda lxc, lyc, lxw, lyw, lxr, lyr : (lyr == 0 and lxr == 0) or (lyr != 0 and lxr != 0) if(lxc == lyc and lxw == lyw) else True)
+
+
+        # this constraint assures that there are no big gaps between lessons
+        constraint_no_big_gaps_between_classes = Constraint((f'L{x}.c', f'L{y}.c', f'L{x}.w', f'L{y}.w', f'L{x}.st', f'L{y}.st', f'L{x}.d', f'L{y}.d'), lambda lxc, lyc, lxw, lyw, lxst, lyst, lxd, lyd: (lyst >= (lxst + lxd) and lyst <= (lxst + lxd*2)) or (lxst >= (lyst + lyd) and lxst <= (lyst + lyd*2)) if(lxc == lyc and lxw == lyw) else True)        
     
         
         # adding previous created restrictions
@@ -116,6 +120,7 @@ for x in range (0, (len(classes)*10)):
         restrictions.append(constraint_subject_lesson_at_same_time)
         restrictions.append(constraint_room_lesson_at_same_time)
         restrictions.append(constraint_cant_book_presencial_on_same_day_of_online) 
+        restrictions.append(constraint_no_big_gaps_between_classes)
         
 
 # print(get_only_list_of_attribute_from_class(1, "w"))
