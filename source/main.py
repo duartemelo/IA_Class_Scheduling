@@ -29,6 +29,10 @@ rooms = {
     3: "Sala N"
 }
 
+# each class has 2 to 4 lessons in a specific classroom
+# to distribute "favourite" rooms per classes, we created a room_usages dictionary
+# whenever we assign a room as a "favourite" room, the "usage" value of that room is incremented
+# this ensures that rooms are assigned as favourite rooms in a balanced way
 rooms_usages = {}
 for room in rooms.keys():
     if room != 0:
@@ -55,12 +59,12 @@ aux = 0
 aux_final = 10
 for x in classes:
     free_day = random.randint(2,6)
-    # print(rooms_usages)
+
     room = least_used_room(rooms_usages)
     rooms_usages[room]+=1
-    # print(rooms_usages)
+
     domain.update({f'L{aux}.fd': {free_day}}) # each class has a random day without lessons
-    domain.update({f'L{aux}.fr': {room}}) # each class has a random day without lessons
+    domain.update({f'L{aux}.fr': {room}}) # each class has a "favourite" room, where it has 2 to 4 lessons per week
     while aux != aux_final: 
         domain.update({f'L{aux}.c': {x}}) # assigning lessons to classes
         aux+=1
@@ -123,9 +127,9 @@ for x in range (0, (len(classes)*10)):
         restrictions.append(constraint_no_big_gaps_between_classes)
         
 
-# print(get_only_list_of_attribute_from_class(1, "w"))
+# print(get_only_list_of_attribute_from_class(1, "w")) # tests
 
-# print(domain)
+# print(domain) # tests
 
 
 # each class has one to two online lessons per week
@@ -196,9 +200,8 @@ for el in classes:
 
 
 class_scheduling = NaryCSP(domain, restrictions)
-# print(class_scheduling.variables)
-# print(ac_solver(class_scheduling, arc_heuristic=sat_up))
-# dict_solver = ac_search_solver(class_scheduling, arc_heuristic=sat_up)
+# print(class_scheduling.variables) # tests
+# dict_solver = ac_search_solver(class_scheduling, arc_heuristic=sat_up) # tests
 dict_solver = ac_solver(class_scheduling, arc_heuristic=sat_up)
 print(dict_solver)
 print("--- %s seconds ---" % (time.time() - start_time))
