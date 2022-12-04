@@ -16,9 +16,9 @@ classes = {
 subjects =  {
     1: "Mobile",
     2: "Programming",
-    3: "Test",
-    4: "Teste2",
-    5: "Teste3"
+    3: "Artificial Intelligence",
+    4: "Data Structures",
+    5: "APIs"
 }
 
 # rooms used in the algorithm, the name is irrelevant but ROOM 0 = online!
@@ -42,8 +42,8 @@ for room in rooms.keys():
 # each class has 10 lessons per week
 lessons_list = []
 for x in range (len(classes)*10):
-    # Lesson is class that was created when we started coding this project
-    # It is kinda irrelevant / unused at the moment, so it could be removed (TODO: remove?)
+    # Lesson is a class that was created when we started coding this project
+    # It is kinda irrelevant / unused at the moment
     new_l = Lesson(None, None, None, None, None, None)
     lessons_list.append(new_l)
 
@@ -87,6 +87,7 @@ restrictions = [
 
 
 # Assigning constraints to lessons
+# These two fors are created so we ensure that all Lessons are compared to each other
 # L1 -> L2, L1 -> L3, L1 -> L4 , etc..
 # L2 -> L3, L2 -> L4, etc..
 # etc.. 
@@ -127,9 +128,10 @@ for x in range (0, (len(classes)*10)):
         restrictions.append(constraint_no_big_gaps_between_classes)
         
 
-# print(get_only_list_of_attribute_from_class(1, "w")) # tests
 
-# print(domain) # tests
+
+# in this section, "dynamic" constraints have been created
+# the previously created ones can't satisfy some restrictions, so we had to create this "dynamic" function constraints
 
 
 # each class has one to two online lessons per week
