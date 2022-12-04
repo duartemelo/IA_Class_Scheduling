@@ -25,8 +25,14 @@ subjects =  {
 rooms = {
     0: "Online",
     1: "Sala L",
-    2: "Sala T"
+    2: "Sala T",
+    3: "Sala N"
 }
+
+rooms_usages = {}
+for room in rooms.keys():
+    if room != 0:
+        rooms_usages[room] = 0
 
 
 # each class has 10 lessons per week
@@ -49,7 +55,12 @@ aux = 0
 aux_final = 10
 for x in classes:
     free_day = random.randint(2,6)
+    # print(rooms_usages)
+    room = least_used_room(rooms_usages)
+    rooms_usages[room]+=1
+    # print(rooms_usages)
     domain.update({f'L{aux}.fd': {free_day}}) # each class has a random day without lessons
+    domain.update({f'L{aux}.fr': {room}}) # each class has a random day without lessons
     while aux != aux_final: 
         domain.update({f'L{aux}.c': {x}}) # assigning lessons to classes
         aux+=1
@@ -148,6 +159,17 @@ def constraint_two_lessons_of_each_subject_per_week(*su_list):
     return True
 
 
+# each class has two to four lessons in a specific classroom
+def constraint_two_to_four_lessons_in_specific_classroom(*r_list):
+    favourite_room = r_list[-1]
+    r_tuple_converted_to_list = list(r_list)
+    r_tuple_converted_to_list.pop()
+
+    if r_list.count(favourite_room) >= 2 and r_list.count(favourite_room) <= 4:
+        return True
+    return False
+
+
 # adding previous function constraints to restrictions array
 for el in classes:
     one_to_two_online_lessons_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "r")), constraint_one_to_two_online_lessons)
@@ -162,6 +184,8 @@ for el in classes:
     two_lessons_of_each_subject_per_week_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "su")), constraint_two_lessons_of_each_subject_per_week)
     restrictions.append(two_lessons_of_each_subject_per_week_constraint)
 
+    two_to_four_lessons_in_specific_classroom_constraint = Constraint(tuple(get_only_list_of_attribute_from_class(el, "r") + get_day_from_class(el, "fr")), constraint_two_to_four_lessons_in_specific_classroom)
+    restrictions.append(two_to_four_lessons_in_specific_classroom_constraint)
 
 
 

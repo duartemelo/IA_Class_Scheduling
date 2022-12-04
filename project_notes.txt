@@ -33,7 +33,7 @@ Only two L with same c, w, st from [13,16]
 
 
 Two to four l with same c have same r
-"Every class has 2 to 4 lessons in a specific classroom" TODO:
+"Every class has 2 to 4 lessons in a specific classroom"
 
 
 if La.w == Lb.w and (La.st == Lb.st or (Lb.st > La.st and Lb.st < La.st+La.d))

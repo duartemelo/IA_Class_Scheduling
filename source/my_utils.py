@@ -14,3 +14,14 @@ def get_day_from_class(c, type):
     x = (c-1)*10
     day=f'L{x}.{type}'
     return [day]
+
+
+
+def least_used_room(rooms_dict):
+    max_value = 1000
+    key_of_least_used = -1
+    for key, value in rooms_dict.items():
+        if value < max_value:
+            key_of_least_used = key
+            max_value = value
+    return key_of_least_used
